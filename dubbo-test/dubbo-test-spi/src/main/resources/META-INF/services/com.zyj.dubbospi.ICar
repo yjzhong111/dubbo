@@ -1,0 +1,3 @@
+black=com.zyj.dubbospi.impl.BlackCar
+red=com.zyj.dubbospi.impl.RedCar
+com.zyj.dubbospi.impl.WrapperCar
