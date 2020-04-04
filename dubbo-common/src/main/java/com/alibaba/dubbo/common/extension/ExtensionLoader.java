@@ -494,6 +494,7 @@ public class ExtensionLoader<T> {
                 EXTENSION_INSTANCES.putIfAbsent(clazz, clazz.newInstance());
                 instance = (T) EXTENSION_INSTANCES.get(clazz);
             }
+            // 注入代理类
             injectExtension(instance);
             Set<Class<?>> wrapperClasses = cachedWrapperClasses;
             if (wrapperClasses != null && !wrapperClasses.isEmpty()) {
@@ -510,6 +511,7 @@ public class ExtensionLoader<T> {
 
     private T injectExtension(T instance) {
         try {
+            // objectFactory == AdaptiveExtensionFactory
             if (objectFactory != null) {
                 for (Method method : instance.getClass().getMethods()) {
                     if (method.getName().startsWith("set")
@@ -526,6 +528,7 @@ public class ExtensionLoader<T> {
                             String property = method.getName().length() > 3 ? method.getName().substring(3, 4).toLowerCase() + method.getName().substring(4) : "";
                             Object object = objectFactory.getExtension(pt, property);
                             if (object != null) {
+                                // 执行setXXX方法，即赋值
                                 method.invoke(instance, object);
                             }
                         } catch (Exception e) {
@@ -582,6 +585,10 @@ public class ExtensionLoader<T> {
         }
 
         Map<String, Class<?>> extensionClasses = new HashMap<String, Class<?>>();
+        // 从相应的路径中加载信息
+        // META-INF/services/
+        // META-INF/dubbo/
+        // META-INF/dubbo/internal
         loadDirectory(extensionClasses, DUBBO_INTERNAL_DIRECTORY);
         loadDirectory(extensionClasses, DUBBO_DIRECTORY);
         loadDirectory(extensionClasses, SERVICES_DIRECTORY);
